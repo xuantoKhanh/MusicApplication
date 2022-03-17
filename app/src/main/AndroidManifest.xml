@@ -3,8 +3,9 @@
     package="com.example.musicapplication">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
 
     <application
         android:usesCleartextTraffic="true"
@@ -23,6 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".PlayerNotificationService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
