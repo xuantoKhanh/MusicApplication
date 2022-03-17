@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Intent serviceIntent = new Intent(this, PlayerNotificationService.class);
-        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
+        //serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
         ContextCompat.startForegroundService(this, serviceIntent);
     }
 }

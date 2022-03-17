@@ -32,10 +32,7 @@ public class PlayerNotificationService extends Service {
     String url2 = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4";
     String url3 = " http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
 
-    private SimpleExoPlayer mPlayer;
     private PlayerView playerControlView;
-    private DataSource.Factory dataSourceFactory;
-    private PlayerNotificationManager playerNotificationManager;
 
 
     @Override
@@ -46,7 +43,7 @@ public class PlayerNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         showVideo();
-        String input = intent.getStringExtra("inputExtra");
+        //String input = intent.getStringExtra("inputExtra");
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
@@ -56,7 +53,7 @@ public class PlayerNotificationService extends Service {
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Foreground Service") //notification title
-                .setContentText(input)
+                .setContentText("abd")
                 .setSmallIcon(R.drawable.music_video)
                 .setContentIntent(pendingIntent)
                 .setCustomContentView(remoteViews)
@@ -70,7 +67,7 @@ public class PlayerNotificationService extends Service {
 
     private void showVideo() {
         ExoPlayer player = new ExoPlayer.Builder(this).build();
-        playerControlView = playerControlView.findViewById(R.id.exoPlayer);
+        playerControlView.findViewById(R.id.exoPlayer);
         // Bind the player to the view.
         playerControlView.setPlayer(player);
 
