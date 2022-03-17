@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -40,40 +41,25 @@ public class PlayerNotificationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-//        ExoPlayer player = new ExoPlayer.Builder(this).build();
-//        playerControlView = playerControlView.findViewById(R.id.exoPlayer);
-//        // Bind the player to the view.
-//        playerControlView.setPlayer(player);
-//
-//        // Build the media item.
-//        MediaItem mediaItem1 = MediaItem.fromUri(url1);
-//        MediaItem mediaItem2 = MediaItem.fromUri(url2);
-//        MediaItem mediaItem3 = MediaItem.fromUri(url3);
-//// Set the media item to be played.
-//        player.addMediaItem(mediaItem1);
-//        player.addMediaItem(mediaItem2);
-//        player.addMediaItem(mediaItem3);
-//// Prepare the player.
-//        player.prepare(); //add list of media sources
-//// Start the playback.
-//        player.play();
-
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        showVideo();
         String input = intent.getStringExtra("inputExtra");
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID) //sua sang custom notification
+
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Foreground Service") //notification title
                 .setContentText(input)
                 .setSmallIcon(R.drawable.music_video)
                 .setContentIntent(pendingIntent)
+                .setCustomContentView(remoteViews)
                 .build();
         startForeground(1, notification);
         //do heavy work on a background thread
@@ -82,31 +68,26 @@ public class PlayerNotificationService extends Service {
         return START_NOT_STICKY;
     }
 
-    // concatenatingMediaSource to pass media as a list,
-    // so that we can easily prev, next
-//    private fun getListOfMediaSource(): ConcatenatingMediaSource {
-//        val mediaUrlList = ArrayList<String>()
-//        mediaUrlList.add("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8")
-//        mediaUrlList.add("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8")
-//        mediaUrlList.add("http://d3rlna7iyyu8wu.cloudfront.net/skip_armstrong/skip_armstrong_stereo_subs.m3u8")
-//        mediaUrlList.add("https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8")
-//        mediaUrlList.add("https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8")
-//
-//        val concatenatingMediaSource = ConcatenatingMediaSource()
-//        for (mediaUrl in mediaUrlList) {
-//            concatenatingMediaSource.addMediaSource(buildMediaSource(mediaUrl))
-//        }
-//
-//        return concatenatingMediaSource
-//
-//    }
-//
-//    //build media source to player
-//    private fun buildMediaSource(videoUrl: String): HlsMediaSource? {
-//        val uri = Uri.parse(videoUrl)
-//        // Create a HLS media source pointing to a playlist uri.
-//        return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
-//    }
+    private void showVideo() {
+        ExoPlayer player = new ExoPlayer.Builder(this).build();
+        playerControlView = playerControlView.findViewById(R.id.exoPlayer);
+        // Bind the player to the view.
+        playerControlView.setPlayer(player);
+
+        // Build the media item.
+        MediaItem mediaItem1 = MediaItem.fromUri(url1);
+        MediaItem mediaItem2 = MediaItem.fromUri(url2);
+        MediaItem mediaItem3 = MediaItem.fromUri(url3);
+// Set the media item to be played.
+        player.addMediaItem(mediaItem1);
+        player.addMediaItem(mediaItem2);
+        player.addMediaItem(mediaItem3);
+// Prepare the player.
+        player.prepare(); //add list of media sources
+// Start the playback.
+        player.play();
+
+    }
 
 
     @Override

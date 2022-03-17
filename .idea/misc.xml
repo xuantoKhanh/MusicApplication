@@ -4,6 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MusicApplication/app/src/main/res/layout/activity_main.xml" value="0.35208333333333336" />
+        <entry key="..\:/Users/DELL/Downloads/MusicApplication/app/src/main/res/drawable/next_song.xml" value="0.1485" />
+        <entry key="..\:/Users/DELL/Downloads/MusicApplication/app/src/main/res/drawable/play_music.xml" value="0.1485" />
+        <entry key="..\:/Users/DELL/Downloads/MusicApplication/app/src/main/res/layout/activity_main.xml" value="0.18958333333333333" />
+        <entry key="..\:/Users/DELL/Downloads/MusicApplication/app/src/main/res/layout/layout_custom_notification.xml" value="0.25" />
       </map>
     </option>
   </component>
