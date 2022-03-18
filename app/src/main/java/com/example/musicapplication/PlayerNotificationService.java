@@ -14,6 +14,7 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -35,7 +36,7 @@ public class PlayerNotificationService extends Service {
     public static final int ACTION_PREVIOUS = 3;
 
     public static ExoPlayer player;
-    private boolean isPlaying;
+    private boolean isPlaying = true;
 
 
     @Override
@@ -56,18 +57,23 @@ public class PlayerNotificationService extends Service {
         if(isPlaying){ //bat su kien click
             remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_PAUSE));
             remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
+            Intent intent1 = new Intent("123");
+            intent.putExtra("test","test");
+            isPlaying = false;
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
         }else{
+            isPlaying = true;
             remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_RESUME));
             remoteViews.setImageViewResource(R.id.img_play, R.drawable.play_music);
         }
 
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID) //add action cho tung button
                 .setContentTitle("Foreground Service") //notification title
                 .setContentText("abd")
                 .setSmallIcon(R.drawable.music_video)
                 .setSound(null)
-                .setContentIntent(pendingIntent)
+                .setContentIntent(pendingIntent) //moi lan click vao noti lai intent sang layout video moi, de len layout cu, am van bat
                 .setCustomContentView(remoteViews)
                 .build();
 
@@ -83,7 +89,7 @@ public class PlayerNotificationService extends Service {
 
     private PendingIntent getPendingIntent(Context context, int action){
         Intent intent = new Intent(this, MyReceiver.class);
-        intent.putExtra("action_music", action);
+        intent.putExtra("123", action);
 
         return PendingIntent.getBroadcast(context.getApplicationContext(), action, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -131,8 +137,9 @@ public class PlayerNotificationService extends Service {
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
                     "Foreground Service Channel",
-                    NotificationManager.IMPORTANCE_DEFAULT
-            );
+                    NotificationManager.IMPORTANCE_DEFAULT);
+
+            serviceChannel.setSound(null, null);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
         }

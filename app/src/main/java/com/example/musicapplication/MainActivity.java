@@ -2,9 +2,13 @@ package com.example.musicapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -31,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         PlayerView playerControlView = findViewById(R.id.exoPlayer);
         // Bind the player to the view.
         playerControlView.setPlayer(player);
-
+        handleBroadCast();
         // Build the media item.
         MediaItem mediaItem1 = MediaItem.fromUri(url1);
         MediaItem mediaItem2 = MediaItem.fromUri(url2);
@@ -48,5 +52,17 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, PlayerNotificationService.class);
         //serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
         ContextCompat.startForegroundService(this, serviceIntent);
+    }
+
+    private void handleBroadCast() {
+        MyReceiver myReceiver = new MyReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                super.onReceive(context, intent);
+                Log.d("Ynsuper","|testtttt");
+                player.setPlayWhenReady(false);
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,new IntentFilter("123"));
     }
 }
