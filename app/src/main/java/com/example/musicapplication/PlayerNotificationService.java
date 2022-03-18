@@ -28,11 +28,7 @@ public class PlayerNotificationService extends Service {
 
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
 
-    String url1 = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-    String url2 = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4";
-    String url3 = " http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
 
-    private PlayerView playerControlView;
 
 
     @Override
@@ -42,7 +38,7 @@ public class PlayerNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        showVideo();
+
         //String input = intent.getStringExtra("inputExtra");
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -51,10 +47,13 @@ public class PlayerNotificationService extends Service {
 
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
 
+
+
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Foreground Service") //notification title
                 .setContentText("abd")
                 .setSmallIcon(R.drawable.music_video)
+                .setSound(null)
                 .setContentIntent(pendingIntent)
                 .setCustomContentView(remoteViews)
                 .build();
@@ -63,27 +62,6 @@ public class PlayerNotificationService extends Service {
         //stopSelf();
 
         return START_NOT_STICKY;
-    }
-
-    private void showVideo() {
-        ExoPlayer player = new ExoPlayer.Builder(this).build();
-        playerControlView.findViewById(R.id.exoPlayer);
-        // Bind the player to the view.
-        playerControlView.setPlayer(player);
-
-        // Build the media item.
-        MediaItem mediaItem1 = MediaItem.fromUri(url1);
-        MediaItem mediaItem2 = MediaItem.fromUri(url2);
-        MediaItem mediaItem3 = MediaItem.fromUri(url3);
-// Set the media item to be played.
-        player.addMediaItem(mediaItem1);
-        player.addMediaItem(mediaItem2);
-        player.addMediaItem(mediaItem3);
-// Prepare the player.
-        player.prepare(); //add list of media sources
-// Start the playback.
-        player.play();
-
     }
 
 
