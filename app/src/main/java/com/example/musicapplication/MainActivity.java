@@ -14,6 +14,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 
 public class MainActivity extends AppCompatActivity {
+    public static ExoPlayer player;
 
     String url1 = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
     String url2 = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4";
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ExoPlayer player = new ExoPlayer.Builder(this).build();
+        player = new ExoPlayer.Builder(this).build();
         PlayerView playerControlView = findViewById(R.id.exoPlayer);
         // Bind the player to the view.
         playerControlView.setPlayer(player);

@@ -27,6 +27,7 @@
         <service android:name=".PlayerNotificationService"
             android:enabled="true"
             android:exported="true"></service>
+        <receiver android:name=".MyReceiver"/>
     </application>
 
 </manifest>

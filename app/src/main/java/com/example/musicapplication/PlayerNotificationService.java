@@ -5,6 +5,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
@@ -27,8 +29,13 @@ import java.security.Provider;
 public class PlayerNotificationService extends Service {
 
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
+    public static final int ACTION_RESUME = 0;
+    public static final int ACTION_PAUSE = 1;
+    public static final int ACTION_NEXT = 2;
+    public static final int ACTION_PREVIOUS = 3;
 
-
+    public static ExoPlayer player;
+    private boolean isPlaying;
 
 
     @Override
@@ -41,12 +48,18 @@ public class PlayerNotificationService extends Service {
 
         //String input = intent.getStringExtra("inputExtra");
         createNotificationChannel();
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
 
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
 
+        if(isPlaying){ //bat su kien click
+            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_PAUSE));
+            remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
+        }else{
+            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_RESUME));
+            remoteViews.setImageViewResource(R.id.img_play, R.drawable.play_music);
+        }
 
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -57,11 +70,54 @@ public class PlayerNotificationService extends Service {
                 .setContentIntent(pendingIntent)
                 .setCustomContentView(remoteViews)
                 .build();
+
         startForeground(1, notification);
         //do heavy work on a background thread
         //stopSelf();
 
+        int actionMusic = intent.getIntExtra("action_music_service", 0);
+        handleActionMusic(actionMusic);
+
         return START_NOT_STICKY;
+    }
+
+    private PendingIntent getPendingIntent(Context context, int action){
+        Intent intent = new Intent(this, MyReceiver.class);
+        intent.putExtra("action_music", action);
+
+        return PendingIntent.getBroadcast(context.getApplicationContext(), action, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+
+    }
+    private void handleActionMusic(int action){
+        switch(action){
+            case ACTION_PAUSE:
+                pauseMusic();
+                break;
+            case ACTION_RESUME:
+                resumeMusic();
+                break;
+            case ACTION_NEXT:
+                break;
+            case ACTION_PREVIOUS:
+                break;
+        }
+    }
+
+    private void resumeMusic() {
+        if (player != null && !isPlaying){
+            player.play();
+            isPlaying = true;
+
+        }
+    }
+
+    private void pauseMusic(){
+        if (player != null && isPlaying){
+            player.pause();
+            isPlaying = false;
+
+        }
     }
 
 
