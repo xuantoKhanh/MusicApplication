@@ -30,13 +30,13 @@ import java.security.Provider;
 public class PlayerNotificationService extends Service {
 
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
-    public static final int ACTION_RESUME = 0;
+    public static final int ACTION_RESUME = 4;
     public static final int ACTION_PAUSE = 1;
     public static final int ACTION_NEXT = 2;
     public static final int ACTION_PREVIOUS = 3;
 
     public static ExoPlayer player;
-    private boolean isPlaying = true;
+    private boolean isPlaying;
 
 
     @Override
@@ -47,7 +47,6 @@ public class PlayerNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        //String input = intent.getStringExtra("inputExtra");
         createNotificationChannel();
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -55,16 +54,22 @@ public class PlayerNotificationService extends Service {
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
 
         if(isPlaying){ //bat su kien click
-            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_PAUSE));
-            remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
+            remoteViews.setOnClickPendingIntent(R.id.img_play_or_pause,
+                    getPendingIntent(this, ACTION_PAUSE));
+            remoteViews.setImageViewResource(R.id.img_play_or_pause, R.drawable.pause_music);
             Intent intent1 = new Intent("123");
             intent.putExtra("test","test");
             isPlaying = false;
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
         }else{
+            remoteViews.setOnClickPendingIntent(R.id.img_play_or_pause,
+                    getPendingIntent(this, ACTION_RESUME));
+            remoteViews.setImageViewResource(R.id.img_play_or_pause, R.drawable.play_music);
+
+            Intent intent2 = new Intent("123");
+            intent.putExtra("test","test");
             isPlaying = true;
-            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_RESUME));
-            remoteViews.setImageViewResource(R.id.img_play, R.drawable.play_music);
+           // LocalBroadcastManager.getInstance(this).sendBroadcast(intent2);
         }
 
 
@@ -90,11 +95,12 @@ public class PlayerNotificationService extends Service {
     private PendingIntent getPendingIntent(Context context, int action){
         Intent intent = new Intent(this, MyReceiver.class);
         intent.putExtra("123", action);
+        //intent.putExtra("1234", action);
 
-        return PendingIntent.getBroadcast(context.getApplicationContext(), action, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-
+        return PendingIntent.getBroadcast(context.getApplicationContext(),
+                action, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
+
     private void handleActionMusic(int action){
         switch(action){
             case ACTION_PAUSE:
@@ -112,9 +118,10 @@ public class PlayerNotificationService extends Service {
 
     private void resumeMusic() {
         if (player != null && !isPlaying){
+           // player.prepare();
             player.play();
             isPlaying = true;
-
+            createNotificationChannel();
         }
     }
 
@@ -122,7 +129,7 @@ public class PlayerNotificationService extends Service {
         if (player != null && isPlaying){
             player.pause();
             isPlaying = false;
-
+            createNotificationChannel();
         }
     }
 

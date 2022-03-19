@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
         MediaItem mediaItem2 = MediaItem.fromUri(url2);
         MediaItem mediaItem3 = MediaItem.fromUri(url3);
         // Set the media item to be played.
-        player.addMediaItem(mediaItem1);
         player.addMediaItem(mediaItem2);
+        player.addMediaItem(mediaItem1);
         player.addMediaItem(mediaItem3);
         // Prepare the player.
         player.prepare(); //add list of media sources
@@ -63,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
                 player.setPlayWhenReady(false);
             }
         };
-        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,new IntentFilter("123"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
+                new IntentFilter("123"));
+        //LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
+                //new IntentFilter("1234"));
     }
 }
