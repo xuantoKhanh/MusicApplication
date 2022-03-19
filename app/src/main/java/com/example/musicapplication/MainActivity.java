@@ -24,6 +24,12 @@ public class MainActivity extends AppCompatActivity {
     String url2 = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4";
     String url3 = " http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
 
+    public static final String ACTION_RESUME =  "4";
+    public static final String ACTION_PAUSE = "1";
+    public static final String ACTION_NEXT =  "2";
+    public static final String ACTION_PREVIOUS = "3";
+
+
 
 
     @Override
@@ -59,13 +65,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 super.onReceive(context, intent);
-                Log.d("Ynsuper","|testtttt");
+                Log.d("Ynsuper","testtttt");
                 player.setPlayWhenReady(false);
             }
         };
-        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
-                new IntentFilter("123"));
-        //LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
-                //new IntentFilter("1234"));
+
+
+        //registering
+        IntentFilter filter = new IntentFilter("123");
+        filter.addAction("1234");
+        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver, filter);
+
+
+//        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
+//                new IntentFilter("123"));
+//
     }
 }

@@ -48,7 +48,12 @@ public class PlayerNotificationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         createNotificationChannel();
+        sendNotification();
 
+        return START_NOT_STICKY;
+    }
+
+    private void sendNotification(){
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
@@ -58,18 +63,19 @@ public class PlayerNotificationService extends Service {
                     getPendingIntent(this, ACTION_PAUSE));
             remoteViews.setImageViewResource(R.id.img_play_or_pause, R.drawable.pause_music);
             Intent intent1 = new Intent("123");
-            intent.putExtra("test","test");
+            intent1.putExtra("test","test");
             isPlaying = false;
+            //sending
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
         }else{
             remoteViews.setOnClickPendingIntent(R.id.img_play_or_pause,
                     getPendingIntent(this, ACTION_RESUME));
             remoteViews.setImageViewResource(R.id.img_play_or_pause, R.drawable.play_music);
 
-            Intent intent2 = new Intent("123");
-            intent.putExtra("test","test");
+            Intent intent2 = new Intent("1234");
+            intent2.putExtra("test2","test2");
             isPlaying = true;
-           // LocalBroadcastManager.getInstance(this).sendBroadcast(intent2);
+            //LocalBroadcastManager.getInstance(this).sendBroadcast(intent2);
         }
 
 
@@ -83,13 +89,7 @@ public class PlayerNotificationService extends Service {
                 .build();
 
         startForeground(1, notification);
-        //do heavy work on a background thread
-        //stopSelf();
 
-        int actionMusic = intent.getIntExtra("action_music_service", 0);
-        handleActionMusic(actionMusic);
-
-        return START_NOT_STICKY;
     }
 
     private PendingIntent getPendingIntent(Context context, int action){
@@ -100,39 +100,6 @@ public class PlayerNotificationService extends Service {
         return PendingIntent.getBroadcast(context.getApplicationContext(),
                 action, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
-
-    private void handleActionMusic(int action){
-        switch(action){
-            case ACTION_PAUSE:
-                pauseMusic();
-                break;
-            case ACTION_RESUME:
-                resumeMusic();
-                break;
-            case ACTION_NEXT:
-                break;
-            case ACTION_PREVIOUS:
-                break;
-        }
-    }
-
-    private void resumeMusic() {
-        if (player != null && !isPlaying){
-           // player.prepare();
-            player.play();
-            isPlaying = true;
-            createNotificationChannel();
-        }
-    }
-
-    private void pauseMusic(){
-        if (player != null && isPlaying){
-            player.pause();
-            isPlaying = false;
-            createNotificationChannel();
-        }
-    }
-
 
     @Override
     public void onDestroy() {
@@ -151,8 +118,6 @@ public class PlayerNotificationService extends Service {
             manager.createNotificationChannel(serviceChannel);
         }
     }
-
-
 
     @Nullable
     @Override

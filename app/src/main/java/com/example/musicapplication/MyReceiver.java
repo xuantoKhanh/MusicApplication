@@ -5,12 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 
 public class MyReceiver extends BroadcastReceiver {
+
+    public static final int ACTION_RESUME = 4;
+    public static final int ACTION_PAUSE = 1;
+    public static final int ACTION_NEXT = 2;
+    public static final int ACTION_PREVIOUS = 3;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        int actionMusic = intent.getIntExtra("123", 0);
-        Intent intentService = new Intent(context, PlayerNotificationService.class);
-        intentService.putExtra("action_music_service", actionMusic);
 
+
+        Intent intentService = new Intent(context, PlayerNotificationService.class);
         context.startService(intentService);
 
 
