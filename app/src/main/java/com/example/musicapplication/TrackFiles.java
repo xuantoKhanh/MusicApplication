@@ -4,10 +4,11 @@ public class TrackFiles {
     private String description;
     private String sources;
     private String subtitle;
-    private int thumb;
+    private String thumb;
     private String title;
 
-    public TrackFiles(String description, String sources, String subtitle, int thumb, String title) {
+
+    public TrackFiles(String description, String sources, String subtitle, String thumb, String title) {
         this.description = description;
         this.sources = sources;
         this.subtitle = subtitle;
@@ -39,11 +40,11 @@ public class TrackFiles {
         this.subtitle = subtitle;
     }
 
-    public int getThumb() {
+    public String getThumb() {
         return thumb;
     }
 
-    public void setThumb(int thumb) {
+    public void setThumb(String thumb) {
         this.thumb = thumb;
     }
 
