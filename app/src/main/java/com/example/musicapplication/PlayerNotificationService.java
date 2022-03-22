@@ -54,6 +54,8 @@ public class PlayerNotificationService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
 
+
+
         if(isPlaying){ //bat su kien click
             remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_PAUSE));
             remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
