@@ -17,6 +17,7 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.graphics.drawable.IconCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.exoplayer2.ExoPlayer;
@@ -69,32 +70,74 @@ public class PlayerNotificationService extends Service {
         }
             Intent notificationIntent = new Intent(this, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-            RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
 
-            remoteViews.setTextViewText(R.id.tv_title_song, listResponseMusic.get(position).getTitle());
-            remoteViews.setTextViewText(R.id.tv_single_song, listResponseMusic.get(position).getSubtitle());
+
+        Intent prevIntent = new Intent(this, MyReceiver.class).setAction(ACTION_PREV);
+        PendingIntent prevPendingIntent = PendingIntent.getBroadcast(this, 0,
+                prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent nextIntent = new Intent(this, MyReceiver.class).setAction(ACTION_NEXT);
+        PendingIntent nextPendingIntent = PendingIntent.getBroadcast(this, 0,
+                nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent playIntent = new Intent(this, MyReceiver.class).setAction(ACTION_PLAY);
+        PendingIntent playPendingIntent = PendingIntent.getBroadcast(this, 0,
+                playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
+            remoteViews.setTextViewText(R.id.tv_title_song, listResponseMusic.get(player.getCurrentMediaItemIndex()).getTitle());
+            //remoteViews.setTextViewText(R.id.tv_single_song, listResponseMusic.get(position).getSubtitle());
             //remoteViews.setImageViewResource(R.id.ima_song, Integer.parseInt(listResponseMusic.get(position).getThumb()));
 
+        remoteViews.setOnClickPendingIntent(R.id.img_play, playPendingIntent);
+        if(isPlaying){
+            remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
+        }else{
+            remoteViews.setImageViewResource(R.id.img_play, R.drawable.play_music);
+        }
+        remoteViews.setOnClickPendingIntent(R.id.img_next, nextPendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.img_previous, prevPendingIntent);
 
-            if (isPlaying) { //bat su kien click
-//            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_PAUSE));
+//
+//            if (isPlaying) { //bat su kien click
+//           // remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, Integer.parseInt(ACTION_PAUSE)));
 //            remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
-                Intent intent1 = new Intent("123");
-                intent.putExtra("test", "test");
-                isPlaying = false;
-                LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
-            } else {
-                isPlaying = true;
-                remoteViews.setOnClickPendingIntent(R.id.img_next, getPendingIntent(this, Integer.parseInt(ACTION_NEXT)));
-                remoteViews.setImageViewResource(R.id.img_play, R.drawable.play_music);
-            }
+//                Intent intent1 = new Intent("123");
+//                intent.putExtra("test", "test");
+//                isPlaying = false;
+//                LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
+//            } else {
+//                isPlaying = true;
+//               //remoteViews.setOnClickPendingIntent(R.id.img_next, getPendingIntent(this, Integer.parseInt(ACTION_NEXT)));
+//                remoteViews.setImageViewResource(R.id.img_play, R.drawable.play_music);
+//            }
 
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID) //add action cho tung button
-                    .setSmallIcon(R.drawable.music_video)
-                    .setSound(null)
-                    .setContentIntent(pendingIntent) //moi lan click vao noti lai intent sang layout video moi, de len layout cu, am van bat
-                    .setCustomContentView(remoteViews)
-                    .build();
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setSmallIcon(IconCompat.createWithContentUri(listResponseMusic.get(position).getThumb()))
+//                .setLargeIcon(picture)
+                .setContentTitle(listResponseMusic.get(position).getTitle())
+                .setContentText(listResponseMusic.get(position).getSubtitle())
+                .setCustomContentView(remoteViews)
+//                .addAction(R.drawable.ic_previous, "Previous", prevPendingIntent)
+//                .addAction(playPauseBtn, "Play", playPendingIntent)
+//                .addAction(R.drawable.ic_next, "Next", nextPendingIntent)
+//                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle())
+//                        .setMediaSession(mediaSession.getSessionToken()))
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setContentIntent(pendingIntent)
+                .setOnlyAlertOnce(true)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager)
+                getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, notification);
+
+//            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID) //add action cho tung button
+//                    .setSmallIcon(R.drawable.music_video)
+//                    .setSound(null)
+//                    .setContentIntent(pendingIntent) //moi lan click vao noti lai intent sang layout video moi, de len layout cu, am van bat
+//                    .setCustomContentView(remoteViews)
+//                    .build();
 
             startForeground(1, notification);
 
