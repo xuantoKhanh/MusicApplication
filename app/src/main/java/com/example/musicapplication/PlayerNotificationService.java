@@ -1,5 +1,7 @@
 package com.example.musicapplication;
 
+import static com.example.musicapplication.MainActivity.listResponseMusic;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -29,7 +31,14 @@ import java.security.Provider;
 
 public class PlayerNotificationService extends Service {
 
-    public static final String CHANNEL_ID = "ForegroundServiceChannel";
+//    private PlayerNotificationManager playerNotificationManager = new PlayerNotificationManager(
+//            this,
+//            new DescriptionAdapter(),
+//            CHANNEL_ID,
+//            NOTIFICATION_ID);
+
+    public static final String CHANNEL_ID = "ForegroundService Channel";
+    public static final String NOTIFICATION_ID = "123";
     public static final int ACTION_RESUME = 0;
     public static final int ACTION_PAUSE = 1;
     public static final int ACTION_NEXT = 2;
@@ -37,6 +46,7 @@ public class PlayerNotificationService extends Service {
 
     public static ExoPlayer player;
     private boolean isPlaying = true;
+    int position = 0;
 
 
     @Override
@@ -54,11 +64,15 @@ public class PlayerNotificationService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
 
+        remoteViews.setTextViewText(R.id.tv_title_song, listResponseMusic.get(position).getTitle());
+        remoteViews.setTextViewText(R.id.tv_single_song, listResponseMusic.get(position).getSubtitle());
+        //remoteViews.setImageViewResource(R.id.ima_song, Integer.parseInt(listResponseMusic.get(position).getThumb()));
+
 
 
         if(isPlaying){ //bat su kien click
-            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_PAUSE));
-            remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
+//            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_PAUSE));
+//            remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
             Intent intent1 = new Intent("123");
             intent.putExtra("test","test");
             isPlaying = false;
@@ -71,8 +85,6 @@ public class PlayerNotificationService extends Service {
 
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID) //add action cho tung button
-                .setContentTitle("Foreground Service") //notification title
-                .setContentText("abd")
                 .setSmallIcon(R.drawable.music_video)
                 .setSound(null)
                 .setContentIntent(pendingIntent) //moi lan click vao noti lai intent sang layout video moi, de len layout cu, am van bat
@@ -80,11 +92,9 @@ public class PlayerNotificationService extends Service {
                 .build();
 
         startForeground(1, notification);
-        //do heavy work on a background thread
-        //stopSelf();
 
         int actionMusic = intent.getIntExtra("action_music_service", 0);
-        handleActionMusic(actionMusic);
+        //handleActionMusic(actionMusic);
 
         return START_NOT_STICKY;
     }
@@ -110,6 +120,11 @@ public class PlayerNotificationService extends Service {
             case ACTION_PREVIOUS:
                 break;
         }
+    }
+
+    private void initListener(){
+        PlayerNotificationManager playerNotificationManager;
+        PlayerNotificationManager.MediaDescriptionAdapter mediaDescriptionAdapter;
     }
 
     private void resumeMusic() {

@@ -7,6 +7,7 @@ import android.content.Intent;
 public class MyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+
         int actionMusic = intent.getIntExtra("action_music", 0);
         Intent intentService = new Intent(context, PlayerNotificationService.class);
         intentService.putExtra("action_music_service", actionMusic);
