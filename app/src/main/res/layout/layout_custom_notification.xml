@@ -45,27 +45,29 @@
 
     <ImageView
         android:id="@+id/img_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/next_song"
-        />
+        android:padding="16dp"
+        android:src="@drawable/next_song" />
 
     <ImageView
         android:id="@+id/img_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_centerVertical="true"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@id/img_next"
+        android:padding="16dp"
         android:src="@drawable/pause_music"
         app:tint="@color/black" />
 
     <ImageView
         android:id="@+id/img_previous"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:padding="16dp"
+        android:layout_height="56dp"
         android:layout_centerVertical="true"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@id/img_play"

@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlayer;
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener {
     int position = 0;
     TextView title;
     public static List<ResponseMusic> listResponseMusic;
+    private Button buttonNext;
 
 
     @Override
@@ -50,7 +53,14 @@ public class MainActivity extends AppCompatActivity implements Player.Listener {
         setContentView(R.layout.activity_main);
 
         title = findViewById(R.id.title);
+        buttonNext = findViewById(R.id.button_next);
 
+        buttonNext.setOnClickListener(view -> {
+                    if (player != null) {
+                        player.seekToNext();
+                    }
+                }
+        );
         InputStream is = getResources().openRawResource(R.raw.music);
         Writer writer = new StringWriter();
         char[] buffer = new char[1024];
@@ -87,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener {
         handleBroadCast();
 
 
-
         // Build the media item.
         for (int i = 0; i < listResponseMusic.size(); i++) {
             MediaItem mediaItem = MediaItem.fromUri(String.valueOf(listResponseMusic.get(i).getSources().get(0)));
@@ -105,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements Player.Listener {
     @Override
     public void onMediaItemTransition(
             @Nullable MediaItem mediaItem, @Player.MediaItemTransitionReason int reason) {
-            title.setText(listResponseMusic.get(player.getCurrentMediaItemIndex()).getTitle());
-            Log.d("Ynsuper","MediaItem: "+listResponseMusic.get(player.getCurrentMediaItemIndex()).getTitle());
+        title.setText(listResponseMusic.get(player.getCurrentMediaItemIndex()).getTitle());
+        Log.d("Ynsuper", "MediaItem: " + listResponseMusic.get(player.getCurrentMediaItemIndex()).getTitle());
     }
 
     private void handleBroadCast() {

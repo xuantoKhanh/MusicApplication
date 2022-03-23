@@ -10,6 +10,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.IBinder;
 import android.widget.RemoteViews;
@@ -31,18 +32,13 @@ import java.security.Provider;
 
 public class PlayerNotificationService extends Service {
 
-//    private PlayerNotificationManager playerNotificationManager = new PlayerNotificationManager(
-//            this,
-//            new DescriptionAdapter(),
-//            CHANNEL_ID,
-//            NOTIFICATION_ID);
 
     public static final String CHANNEL_ID = "ForegroundService Channel";
-    public static final String NOTIFICATION_ID = "123";
-    public static final int ACTION_RESUME = 0;
-    public static final int ACTION_PAUSE = 1;
-    public static final int ACTION_NEXT = 2;
-    public static final int ACTION_PREVIOUS = 3;
+    public static final int NOTIFICATION_ID = 123;
+    public static final String ACTION_PLAY = "resume";
+    public static final String ACTION_PAUSE = "pause";
+    public static final String ACTION_NEXT = "next";
+    public static final String ACTION_PREV = "prev";
 
     public static ExoPlayer player;
     private boolean isPlaying = true;
@@ -56,47 +52,57 @@ public class PlayerNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        //String input = intent.getStringExtra("inputExtra");
         createNotificationChannel();
 
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
+        String actionName = intent.getStringExtra("myActionName");
+        if (actionName != null) {
+            switch (actionName) {
+                case ACTION_PLAY:
+                    break;
+                case ACTION_PREV:
+                    player.seekBack();
+                    break;
+                case ACTION_NEXT:
+                    player.seekToNext();
+                    break;
+            }
+        }
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+            RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
 
-        remoteViews.setTextViewText(R.id.tv_title_song, listResponseMusic.get(position).getTitle());
-        remoteViews.setTextViewText(R.id.tv_single_song, listResponseMusic.get(position).getSubtitle());
-        //remoteViews.setImageViewResource(R.id.ima_song, Integer.parseInt(listResponseMusic.get(position).getThumb()));
+            remoteViews.setTextViewText(R.id.tv_title_song, listResponseMusic.get(position).getTitle());
+            remoteViews.setTextViewText(R.id.tv_single_song, listResponseMusic.get(position).getSubtitle());
+            //remoteViews.setImageViewResource(R.id.ima_song, Integer.parseInt(listResponseMusic.get(position).getThumb()));
 
 
-
-        if(isPlaying){ //bat su kien click
+            if (isPlaying) { //bat su kien click
 //            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_PAUSE));
 //            remoteViews.setImageViewResource(R.id.img_play, R.drawable.pause_music);
-            Intent intent1 = new Intent("123");
-            intent.putExtra("test","test");
-            isPlaying = false;
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
-        }else{
-            isPlaying = true;
-            remoteViews.setOnClickPendingIntent(R.id.img_play, getPendingIntent(this, ACTION_RESUME));
-            remoteViews.setImageViewResource(R.id.img_play, R.drawable.play_music);
-        }
+                Intent intent1 = new Intent("123");
+                intent.putExtra("test", "test");
+                isPlaying = false;
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
+            } else {
+                isPlaying = true;
+                remoteViews.setOnClickPendingIntent(R.id.img_next, getPendingIntent(this, Integer.parseInt(ACTION_NEXT)));
+                remoteViews.setImageViewResource(R.id.img_play, R.drawable.play_music);
+            }
 
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID) //add action cho tung button
+                    .setSmallIcon(R.drawable.music_video)
+                    .setSound(null)
+                    .setContentIntent(pendingIntent) //moi lan click vao noti lai intent sang layout video moi, de len layout cu, am van bat
+                    .setCustomContentView(remoteViews)
+                    .build();
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID) //add action cho tung button
-                .setSmallIcon(R.drawable.music_video)
-                .setSound(null)
-                .setContentIntent(pendingIntent) //moi lan click vao noti lai intent sang layout video moi, de len layout cu, am van bat
-                .setCustomContentView(remoteViews)
-                .build();
+            startForeground(1, notification);
 
-        startForeground(1, notification);
+            int actionMusic = intent.getIntExtra("action_music_service", 0);
+            //handleActionMusic(actionMusic);
 
-        int actionMusic = intent.getIntExtra("action_music_service", 0);
-        //handleActionMusic(actionMusic);
+            return START_NOT_STICKY;
 
-        return START_NOT_STICKY;
     }
 
     private PendingIntent getPendingIntent(Context context, int action){
@@ -104,34 +110,12 @@ public class PlayerNotificationService extends Service {
         intent.putExtra("123", action);
 
         return PendingIntent.getBroadcast(context.getApplicationContext(), action, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-
-    }
-    private void handleActionMusic(int action){
-        switch(action){
-            case ACTION_PAUSE:
-                pauseMusic();
-                break;
-            case ACTION_RESUME:
-                resumeMusic();
-                break;
-            case ACTION_NEXT:
-                break;
-            case ACTION_PREVIOUS:
-                break;
-        }
-    }
-
-    private void initListener(){
-        PlayerNotificationManager playerNotificationManager;
-        PlayerNotificationManager.MediaDescriptionAdapter mediaDescriptionAdapter;
     }
 
     private void resumeMusic() {
         if (player != null && !isPlaying){
             player.play();
             isPlaying = true;
-
         }
     }
 
@@ -142,6 +126,9 @@ public class PlayerNotificationService extends Service {
 
         }
     }
+
+
+
 
 
     @Override
