@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -19,6 +20,7 @@ import com.google.android.exoplayer2.ui.StyledPlayerView;
 
 public class MainActivity extends AppCompatActivity {
     public static ExoPlayer player;
+    Button btNext, btPrev;
 
     String url1 = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
     String url2 = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4";
@@ -29,13 +31,23 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_NEXT =  "2";
     public static final String ACTION_PREVIOUS = "3";
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        btNext = findViewById(R.id.next_bt);
+        btPrev = findViewById(R.id.prev_bt);
+        btNext.setOnClickListener(view -> {
+            if(player != null){
+                player.seekToNext();
+            }
+        });
+
+        btPrev.setOnClickListener(view -> {
+            if(player != null){
+                player.seekToPrevious();
+            }
+        });
 
         player = new ExoPlayer.Builder(this).build();
         PlayerView playerControlView = findViewById(R.id.exoPlayer);
@@ -72,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         //registering
-        IntentFilter filter = new IntentFilter("123");
-        filter.addAction("1234");
-        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver, filter);
+//        IntentFilter filter = new IntentFilter("123");
+//        filter.addAction("1234");
+//        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver, filter);
 
 
 //        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,

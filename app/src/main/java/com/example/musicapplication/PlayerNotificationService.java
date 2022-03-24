@@ -36,7 +36,7 @@ public class PlayerNotificationService extends Service {
     public static final int ACTION_PREVIOUS = 3;
 
     public static ExoPlayer player;
-    private boolean isPlaying;
+    private boolean isPlaying = false;
 
 
     @Override
@@ -50,33 +50,50 @@ public class PlayerNotificationService extends Service {
         createNotificationChannel();
         sendNotification();
 
+        int actionMusic = intent.getIntExtra("action_music_service", 0);
+        handleActionMusic(actionMusic);
+
         return START_NOT_STICKY;
     }
 
     private void sendNotification(){
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        Intent prevIntent = new Intent(this, MyReceiver.class).setAction(String.valueOf(ACTION_PREVIOUS));
+        PendingIntent prevPendingIntent = PendingIntent.getBroadcast(this, 0,
+                prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent nextIntent = new Intent(this, MyReceiver.class).setAction(String.valueOf(ACTION_NEXT));
+        PendingIntent nextPendingIntent = PendingIntent.getBroadcast(this, 0,
+                nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent playIntent = new Intent(this, MyReceiver.class).setAction(String.valueOf(ACTION_PAUSE));
+        PendingIntent playPendingIntent = PendingIntent.getBroadcast(this, 0,
+                playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_custom_notification);
 
-        if(isPlaying){ //bat su kien click
-            remoteViews.setOnClickPendingIntent(R.id.img_play_or_pause,
-                    getPendingIntent(this, ACTION_PAUSE));
-            remoteViews.setImageViewResource(R.id.img_play_or_pause, R.drawable.pause_music);
-            Intent intent1 = new Intent("123");
-            intent1.putExtra("test","test");
-            isPlaying = false;
-            //sending
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
-        }else{
-            remoteViews.setOnClickPendingIntent(R.id.img_play_or_pause,
-                    getPendingIntent(this, ACTION_RESUME));
-            remoteViews.setImageViewResource(R.id.img_play_or_pause, R.drawable.play_music);
+//        if(isPlaying){
+//            remoteViews.setOnClickPendingIntent(R.id.img_play_or_pause,
+//                    getPendingIntent(this, 1));
+//            remoteViews.setImageViewResource(R.id.img_play_or_pause, R.drawable.pause_music);
+////            Intent intent1 = new Intent("123");
+////            intent1.putExtra("test","test");
+////            isPlaying = false;
+////            //sending
+////            LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
+//        }else{
+//            remoteViews.setOnClickPendingIntent(R.id.img_play_or_pause,
+//                    getPendingIntent(this, ACTION_PAUSE));
+//            remoteViews.setImageViewResource(R.id.img_play_or_pause, R.drawable.play_music);
 
-            Intent intent2 = new Intent("1234");
-            intent2.putExtra("test2","test2");
-            isPlaying = true;
+//            Intent intent2 = new Intent("1234");
+//            intent2.putExtra("test2","test2");
+//            isPlaying = true;
             //LocalBroadcastManager.getInstance(this).sendBroadcast(intent2);
-        }
+       //}
+        remoteViews.setOnClickPendingIntent(R.id.img_next, nextPendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.img_previous, prevPendingIntent);
 
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID) //add action cho tung button
@@ -90,15 +107,61 @@ public class PlayerNotificationService extends Service {
 
         startForeground(1, notification);
 
+
+
+
     }
 
-    private PendingIntent getPendingIntent(Context context, int action){
-        Intent intent = new Intent(this, MyReceiver.class);
-        intent.putExtra("123", action);
-        //intent.putExtra("1234", action);
+//    private PendingIntent getPendingIntent(Context context, int action){
+//        Intent intent = new Intent(this, MyReceiver.class);
+//        intent.putExtra("123", action);
+//        //intent.putExtra("1234", action);
+//
+//        return PendingIntent.getBroadcast(context.getApplicationContext(),
+//                action, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//    }
 
-        return PendingIntent.getBroadcast(context.getApplicationContext(),
-                action, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    private void handleActionMusic(int action){
+        switch(action){
+            case ACTION_PAUSE:
+                pauseMusic();
+                break;
+            case ACTION_RESUME:
+                resumeMusic();
+                break;
+            case ACTION_NEXT:
+                nextMusic();
+                break;
+            case ACTION_PREVIOUS:
+                prevMusic();
+                break;
+        }
+    }
+
+    private void nextMusic() {
+        if (player != null && isPlaying){
+            player.seekToNext();
+        }
+    }
+    private void prevMusic(){
+        if (player != null && isPlaying){
+            player.seekToPrevious();
+        }
+    }
+
+    private void resumeMusic() {
+        if (player != null && !isPlaying){
+            // player.prepare();
+            player.play();
+            isPlaying = true;
+        }
+    }
+
+    private void pauseMusic(){
+        if (player != null && isPlaying){
+            player.pause();
+            isPlaying = false;
+        }
     }
 
     @Override
